@@ -8,6 +8,7 @@ import com.google.gson.JsonObject
 import don.com.nbaapp.data.mainRepo.MainRepository
 import don.com.nbaapp.model.BaseMdl
 import don.com.nbaapp.model.BaseMdl.Links
+import don.com.nbaapp.model.ScoreBoardMdl
 import don.com.nbaapp.model.session.SessionMain
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -62,18 +63,48 @@ class MainPresenter(mView: MainView) : BasePresenter<MainView>(mView) {
                         val gson = Gson()
                         val base = gson.fromJson(result, BaseMdl::class.java)
 
-                        val sessionMain = realm.where(SessionMain::class.java).findFirst()
-                        realm.beginTransaction()
-                        if (sessionMain != null) {
-                            sessionMain.anchorDate = base.links?.anchorDate!!
-                            sessionMain.scoreboard = base.links.scoreboard!!
-                            sessionMain.teams = base.links.teams!!
-                        }
-                        realm.commitTransaction()
+                        /* val sessionMain = realm.where(SessionMain::class.java).findFirst()
+                         realm.beginTransaction()
+                         if (sessionMain != null) {
+                             sessionMain.anchorDate = base.links?.anchorDate!!
+                             sessionMain.scoreboards = base.links.scoreboard!!
+                             sessionMain.teams = base.links.teams!!
+                         }
+                         realm.commitTransaction()
+ */
 
 
+                        mView.onGetTodaySuccess(base.links!!)
 
-//                                mView.onGetTodaySuccess(base.links!!).
+                    }
+
+                    override fun onResponseError(errorMessage: String) {
+                        mView.stopLoading()
+                        mView.errorLoading(errorMessage)
+                        Log.wtf("LOG-ERROR", errorMessage)
+                    }
+
+                })
+
+
+    }
+
+
+    fun getScoreboards(gameDate:String) {
+
+        mView.showLoading()
+        mRequest.getScoreboards(gameDate)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(object : BaseObserver<JsonObject>() {
+                    override fun onResponseSuccess(result: JsonObject) {
+                        mView.stopLoading()
+                        Log.wtf("LOG-SUCCESS", result.toString())
+
+                        val gson = Gson()
+                        val base = gson.fromJson(result, ScoreBoardMdl::class.java)
+
+                        mView.onGetScoresSuccess(base.games)
 
                     }
 

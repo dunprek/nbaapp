@@ -12,17 +12,4 @@ import io.realm.Realm
 object ROHelper {
 
 
-    fun getSessionMain():String {
-
-        val realm = Realm.getDefaultInstance()
-
-        realm.beginTransaction()
-        val sessionProfile = realm.where(SessionMain::class.java).findFirst()
-        val userId = sessionProfile!!.scoreboard
-        realm.commitTransaction()
-
-        return userId
-    }
-
-
 }
