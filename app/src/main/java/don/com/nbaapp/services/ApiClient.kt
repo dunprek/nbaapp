@@ -1,10 +1,10 @@
 package don.com.nbaapp.services
 
-import don.com.nbaapp.BuildConfig
-import okhttp3.Interceptor
+import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
@@ -29,10 +29,6 @@ class ApiClient(val baseURL: String) {
         mApiServices = retrofit.create(ApiServices::class.java)
     }
 
-    fun getApiServices(): ApiServices {
-        return mApiServices
-    }
-
 
     private fun initRetrofit(baseURL: String): Retrofit {
 
@@ -41,28 +37,22 @@ class ApiClient(val baseURL: String) {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
+        val gson = GsonBuilder()
+                .serializeNulls()
+                .create()
+
+
         val client = OkHttpClient.Builder().apply {
             connectTimeout(10000, TimeUnit.SECONDS)
                     .writeTimeout(10000, TimeUnit.SECONDS)
                     .readTimeout(10000, TimeUnit.SECONDS)
 
-            networkInterceptors().add(Interceptor { chain ->
-                val original = chain.request()
-                val request = original.newBuilder()
-                        .header("Api-Key", BuildConfig.API_KEY)
-                        .header("X-Platform", BuildConfig.X_PLATFORM)
-                        .header("Platform-Id", BuildConfig.PLATFORM_ID)
-                        .header("Base-Uri", BuildConfig.BASE_URI)
-                        .header("App-Name", BuildConfig.APPNAME)
-                        .method(original.method(), original.body())
-                        .build()
-                chain.proceed(request)
-            })
+
             addInterceptor(interceptor)
         }
         return Retrofit.Builder().baseUrl(baseURL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client.build())
                 .build()
     }
