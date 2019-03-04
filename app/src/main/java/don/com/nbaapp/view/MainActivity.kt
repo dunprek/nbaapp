@@ -8,10 +8,8 @@ import android.view.View
 import android.widget.LinearLayout
 import don.com.nbaapp.R
 import don.com.nbaapp.helper.GeneralUtil.showToast
-import don.com.nbaapp.helper.ROHelper
 import don.com.nbaapp.model.BaseMdl.Links
 import don.com.nbaapp.model.ScoreBoardMdl.Game
-import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), MainView {
@@ -20,8 +18,8 @@ class MainActivity : AppCompatActivity(), MainView {
     lateinit var presenter: MainPresenter
     lateinit var progressDialog: LinearLayout
 
-     var realm = Realm.getDefaultInstance()
 
+    var anchorDate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +61,9 @@ class MainActivity : AppCompatActivity(), MainView {
             setting.setFromUpdate(fromUpdateProfile);
             realm.commitTransaction();*/
 
-
+            val intent = Intent(this,ScoreboardActivity::class.java)
+            intent.putExtra("ANCHOR_DATE",anchorDate)
+            startActivity(intent)
 
         }
 
@@ -92,9 +92,9 @@ class MainActivity : AppCompatActivity(), MainView {
 
 //        presenter.getScoreboards(links.anchorDate!!)
 
-        val intent = Intent(this,ScoreboardActivity::class.java)
-        intent.putExtra("ANCHOR_DATE",links.anchorDate)
-        startActivity(intent)
+        anchorDate = links.anchorDate!!
+
+
 
     }
 

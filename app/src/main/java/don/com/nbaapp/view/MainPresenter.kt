@@ -9,10 +9,8 @@ import don.com.nbaapp.data.mainRepo.MainRepository
 import don.com.nbaapp.model.BaseMdl
 import don.com.nbaapp.model.BaseMdl.Links
 import don.com.nbaapp.model.ScoreBoardMdl
-import don.com.nbaapp.model.session.SessionMain
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import io.realm.Realm
 
 /**
  * Created by gideon on 25,February,2019
@@ -54,10 +52,6 @@ class MainPresenter(mView: MainView) : BasePresenter<MainView>(mView) {
                            realm.insertOrUpdate(sessionLinks)
                            realm.commitTransaction()*/
 
-                        val realm = Realm.getDefaultInstance()
-                        realm.beginTransaction()
-                        realm.where(SessionMain::class.java).findAll().deleteAllFromRealm()
-                        realm.commitTransaction()
 
 
                         val gson = Gson()

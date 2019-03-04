@@ -225,4 +225,5 @@ data class ScoreBoardMdl(
                 val isEndOfPeriod: Boolean? // false
         )
     }
+
 }
